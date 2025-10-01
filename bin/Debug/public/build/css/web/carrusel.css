@@ -1,0 +1,58 @@
+.articulo {
+  background: linear-gradient(to right, #368a5d, white);
+  padding: 1rem;
+  padding-left: 3rem;
+  margin-top: 2rem;
+  border-radius: 1.5rem;
+}
+
+.reglas .texto {
+  padding-left: 3rem;
+}
+.reglas .indice {
+  display: block;
+  width: 100%;
+  text-align: right;
+}
+
+.tercio {
+  width: 35rem;
+  margin: 2rem;
+}
+
+.mayoria {
+  width: 90%;
+  margin: 2rem;
+}
+@media (min-width: 768px) {
+  .mayoria {
+    width: 55%;
+  }
+}
+
+.minoria {
+  width: 90%;
+  margin: 2rem;
+}
+@media (min-width: 768px) {
+  .minoria {
+    width: 40rem;
+  }
+}
+
+.imagenCelda {
+  width: 9rem;
+  border-radius: 1rem;
+  transition: all 0.2s;
+}
+
+.imagenCelda:hover {
+  width: 9.5rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .articulo {
+    background: linear-gradient(to right, #368a5d, #333333);
+    color: white;
+  }
+}

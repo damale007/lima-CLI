@@ -1,0 +1,41 @@
+.iconoMusica {
+  width: 5rem;
+  margin: 1rem;
+}
+
+.imagenMusica {
+  width: 90%;
+  border-radius: 1rem;
+}
+@media (min-width: 768px) {
+  .imagenMusica {
+    width: 40%;
+  }
+}
+
+.botonMusica {
+  background: #315531;
+  color: white;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 0.3rem;
+  padding-bottom: 0.3rem;
+  margin: 1rem;
+  border-radius: 2rem;
+  transition: all 0.1s;
+}
+
+.botonMusica:hover {
+  background: #142114;
+}
+
+.clsSeleccionado {
+  background: green;
+}
+
+.reproduccionMusica {
+  list-style: none;
+}
+.reproduccionMusica li {
+  margin-top: 3rem;
+}

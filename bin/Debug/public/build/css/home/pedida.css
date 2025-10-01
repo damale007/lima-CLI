@@ -1,0 +1,127 @@
+.pedida ul {
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+  display: block;
+}
+.pedida li {
+  width: 95%;
+  height: 40px;
+  margin: 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+}
+.pedida .nombreDir {
+  width: 60%;
+}
+.pedida a {
+  text-decoration: none;
+  color: black;
+}
+.pedida .gris {
+  background: #DDD;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.pedida .grupos {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px;
+  background: #9eeeb1;
+}
+.pedida .grupos a {
+  text-decoration: none;
+  background: white;
+  padding: 7px;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-left: 10px;
+  border-radius: 10px;
+}
+.pedida header {
+  margin-bottom: 20px;
+}
+.pedida .buscador {
+  display: flex;
+  justify-content: space-between;
+  width: 97%;
+  margin: 0 auto;
+  padding: 10px;
+  background: #b1f8aa;
+}
+.pedida input {
+  padding: 5px;
+  border-radius: 4px;
+  border: 0px solid;
+}
+.pedida .nombre {
+  color: #444;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+.pedida .direccion {
+  font-weight: bold;
+}
+.pedida button {
+  padding: 7px;
+  margin-left: 20px;
+  border: 1px solid #777;
+  border-radius: 5px;
+}
+.pedida .amarillo {
+  background: rgb(214, 244, 78);
+}
+.pedida .naranja {
+  background: rgb(229, 87, 5);
+  color: white;
+}
+.pedida .verde {
+  background: rgb(5, 229, 24);
+  color: white;
+}
+.pedida .imagen {
+  width: 20px;
+  height: 20px;
+}
+.pedida .input {
+  width: 80%;
+  margin-bottom: 20px;
+  border: 1px solid black;
+  display: block;
+}
+.pedida .registro {
+  width: 70%;
+  margin: 0 auto;
+}
+.pedida .boton_enviar {
+  background: green;
+  color: white;
+  padding: 10x;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .pedida .grupos {
+    background: #073812;
+    color: white;
+  }
+  .pedida .buscador {
+    background: #15670d;
+    color: white;
+  }
+  .pedida .gris {
+    background: #222;
+    color: white;
+  }
+  .pedida .nombre {
+    color: #DDD;
+  }
+  .pedida .direccion {
+    color: white;
+  }
+}

@@ -1,0 +1,74 @@
+/* CSS Document */
+
+.Hermandad {
+	border-radius:  13px;
+	background: #006600;
+    text-align: center;
+}
+.Hermandad a{
+	color: white;
+}
+
+.SSanta a{
+	color: white;
+}
+.Normal {text-align: center;
+		color: black; }
+.Quincena {background: #55FF55;
+		 color: black;
+         text-align: center;}
+.SSanta {background: #663399;
+		color: white;
+         text-align: center;}
+.Noticias {
+	border-radius: 13px;
+	background: #996600;
+    text-align: center;}
+.Iglesia {
+	background: #09F;
+    text-align: center;
+	border-radius: 13px;
+}
+.Festivo {
+	text-align: center;
+	color: #F00;
+	font-weight: bold;
+}
+
+.mes {
+	background-color: #DDD;
+	border: 3px solid #777;
+	color: black;
+	padding: 10px;
+	border-radius: 22px 22px 22px 22px;
+}
+
+.nombre_mes {
+	width: 100%;
+	padding-bottom: 9px;
+	text-align: right;
+	font-family: 'Raleway', sans-serif;
+	font-size: 25px;
+	font-weight: bold;
+	color: #444;
+}
+
+.dias {
+	background: #AAA;
+}
+
+.calendario {
+	display: grid;
+	grid-template-columns: 27px 27px 27px 27px 27px 27px 27px;
+}
+
+.calendarioMes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+@media only screen and (max-width: 768px){
+    .calendarioMes {
+        grid-template-columns: 1fr;
+    }
+}

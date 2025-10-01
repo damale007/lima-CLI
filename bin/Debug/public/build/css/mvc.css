@@ -1,0 +1,37 @@
+<!-- Paginación 
+
+.indice {
+    text-align: center;
+}
+
+.indice .paginaIndice {
+    padding: 2px;
+}
+
+.indice .paginaActual {
+    padding: 2px;
+    background: green;
+    color: white;
+}
+
+.botonIndiceAnterior {
+    margin-right: 10px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid darkgreen;
+    background: lightgreen;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.botonIndiceSiguiente {
+    margin-left: 10px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: 1px solid darkgreen;
+    background: lightgreen;
+    border-radius: 7px;
+    cursor: pointer;
+}

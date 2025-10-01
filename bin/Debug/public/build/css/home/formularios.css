@@ -1,0 +1,97 @@
+.ficha {
+  width: 80%;
+  margin: 0px auto;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 5px 5px 15px #777;
+  background: white;
+}
+.ficha fieldset {
+  margin-bottom: 25px;
+  padding: 10px;
+  border-radius: 7px;
+}
+.ficha input[type=text], .ficha select {
+  margin: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 0px;
+  background: #EEE;
+}
+.ficha input[type=submit] {
+  background: #1d6e0d;
+  border: 0px;
+  margin-right: 20px;
+  color: white;
+  font-weight: bold;
+  padding: 9px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 9px;
+  float: right;
+  cursor: pointer;
+}
+.ficha textarea {
+  width: 95%;
+  height: 150px;
+  margin: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 0px;
+  background: #EEE;
+}
+.ficha .boton {
+  background: rgb(213, 167, 13);
+  border: 0px;
+  margin-right: 20px;
+  color: white;
+  font-weight: bold;
+  padding: 9px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 9px;
+  float: right;
+  cursor: pointer;
+}
+.ficha .verde {
+  background: #1d6e0d;
+}
+.ficha .largo {
+  width: 40%;
+  min-width: 250px;
+}
+.ficha .corto {
+  width: 100px;
+}
+
+h1 {
+  width: 100%;
+  text-align: center;
+}
+
+h2 {
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+}
+
+.identificador {
+  width: 100%;
+  font-size: 20px;
+  color: #777;
+  font-weight: bold;
+  text-align: center;
+}
+
+.alerta {
+  width: 80%;
+  margin: 0px auto;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 5px 5px 15px #777;
+  background: white;
+  border: 5px solid orangered;
+  text-align: center;
+}

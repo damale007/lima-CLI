@@ -54,7 +54,7 @@ namespace MVC
                         break;
                     case "version":
                         Mensajes.lineaAyuda("Lima versión 1.0", "\n(c)2025, creado por David Martínez Leal\n");
-                        Console.WriteLine("Compilación 2025.9.30.1");
+                        Console.WriteLine("Compilación 2025.10.1.1");
                         break;
                     case "seo":
                         if (args.Length > 1 && args[1] == "error")

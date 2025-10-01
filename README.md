@@ -31,7 +31,7 @@ Esta herramienta contribuye a que LIMA sea conocido como un *framework* **muy li
 Para obtener la documentación completa e información sobre el *framework* LIMA 1.0 de PHP, consulte el repositorio principal.
 
 *   **Repositorio Principal de LIMA:** [[https://github.com/damale007/lima]
-*   **Web en Producción:** LIMA está siendo utilizado para adaptar a MVC la Web de la Hermandad de la Santa Cruz de la Calle Cabo. Esta web ofrece funcionalidades complejas (gestión de noticias, eventos, pujas, red social "Comunidad", etc.). [https://davidmartinezleal.netlify.app/lima
+*   **Web en Producción:** LIMA está siendo utilizado para adaptar a MVC la Web de la Hermandad de la Santa Cruz de la Calle Cabo. Esta web ofrece funcionalidades complejas (gestión de noticias, eventos, pujas, red social "Comunidad", etc.). https://limaframework.netlify.app
 
 ## 👤 Desarrollador
 

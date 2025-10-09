@@ -44,13 +44,22 @@ namespace MVC
             }
         }
 
-        public static void inserta(String linea, String busca)
+        public static void inserta(String linea, String busca, bool anterior = false)
         {
             for (int i = 0; i < lineasFile.Count; i++)
             {
                 if (lineasFile[i].Contains(busca))
                 {
-                    lineasFile.Insert(i +1, linea);
+                    if (!anterior)
+                    {
+                        lineasFile.Insert(i + 1, linea);
+                        break;
+                    }
+                    else
+                    {
+                        lineasFile.Insert(i, linea);
+                        break;
+                    }
                 }
             }
         }
@@ -66,14 +75,23 @@ namespace MVC
             return -1;
         }
 
-        public static int existeLinea(String busca)
+        public static int existeLinea(String busca, bool sinEspacios = false)
         {
             int veces = 0;
 
             foreach(String linea in lineasFile)
             {
-                if (linea.Contains(busca))
-                    veces++;
+                if (!sinEspacios)
+                {
+                    if (linea.Contains(busca))
+                        veces++;
+                }
+                else
+                {
+                    String noSpaces = linea.Replace(" ", "");
+                    if (noSpaces.Contains(busca))
+                        veces++;
+                }
             }
 
             return veces;
@@ -136,6 +154,11 @@ namespace MVC
                         lineasFile.Insert(i, insert[j][1]);
                         insert[j][0] = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
                     }
+                    else if (insert[j][0] == "__FINAL__")
+                    {
+                        lineasFile.Add(insert[j][1]);
+                        insert[j][0] = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+                    }
                 }
 
                 foreach (String r in remove)
@@ -176,33 +199,33 @@ namespace MVC
             Boolean contenido = false;
 
 
-            if (!Ficheros.existe("public\\index.php"))
+            if (!Ficheros.existe("app\\includes\\routes.php"))
             {
                 Mensajes.ponError("No existe archivo de definiciones de URLs. Ese fichero es indispensable para funcionar.");
                 return;
             }
 
-            leeFichero("public\\index.php");
+            leeFichero("app\\includes\\routes.php");
 
-            for (int i=0; i<lineasFile.Count; i++)
-                //while ((registro = sr.ReadLine()) != null)
+            //for (int i=0; i<lineasFile.Count; i++)
+            foreach(String line in lineasFile)
             {
-                if (lineasFile[i].Contains("use "))
+                if (line.Contains("use "))
                 {
-                    uses.Add(lineasFile[i]);
-                    if (lineasFile[i].Contains(controlador))
+                    uses.Add(line);
+                    if (line.Contains(controlador))
                         contenido = true;
                 }
 
-                if (lineasFile[i].Contains("$router->get") || lineasFile[i].Contains("$router->post"))
-                    definiciones.Add(lineasFile[i]);
+                if (line.Contains("$router->route"))
+                    definiciones.Add(line);
 
-                if (lineasFile[i].Contains("$router->middleware"))
-                    middles.Add(lineasFile[i]);
+                if (line.Contains("$router->middleware"))
+                    middles.Add(line);
             }
 
             if (!contenido && modif == CREAR && controlador != "*")
-                inserta("use Controlador\\" + controlador + ";", "use MVC\\Router;");
+                inserta("\tuse Controlador\\" + controlador + ";", "<?php");
 
             modify.Clear();
             insert.Clear();
@@ -212,7 +235,7 @@ namespace MVC
             switch (modif)
             {
                 case CREAR:
-                    b[0] = "$router->comprobarRutas();";
+                    b[0] = "__FINAL__";
                     insert.Add(b);
                     break;
                 case MODIFICAR:
@@ -229,18 +252,18 @@ namespace MVC
 
             modificaLineas(modify, insert, remove);
 
-            escribeFichero("public\\index.php");
+            escribeFichero("app\\includes\\routes.php");
 
             switch (modif)
             {
                 case MODIFICAR:
-                    Console.WriteLine("URL modificada correctamente.");
+                    Mensajes.lineaAyuda("URL modificada correctamente.", "\n");
                     break;
                 case BORRAR:
-                    Console.WriteLine("URL eliminada correctamente.");
+                    Mensajes.lineaAyuda("URL eliminada correctamente.", "\n");
                     break;
                 case CREAR:
-                    Console.WriteLine("URL creada correctamente.");
+                    Mensajes.lineaAyuda("URL creada correctamente.", "\n");
                     break;
             }
         }

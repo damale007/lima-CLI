@@ -54,7 +54,7 @@ namespace MVC
                         break;
                     case "version":
                         Mensajes.lineaAyuda("Lima versión 1.0", "\n(c)2025, creado por David Martínez Leal\n");
-                        Console.WriteLine("Compilación 2025.10.1.1");
+                        Console.WriteLine("Compilación 2025.10.8.1");
                         break;
                     case "seo":
                         if (args.Length > 1 && args[1] == "error")
@@ -69,7 +69,7 @@ namespace MVC
                 }
             } else  Console.WriteLine("Para obtener ayuda use lima help");
 
-            //Details.comandos(a);
+            //Create.createMigration("usuario2");
             //Config.comandos(a);
             //seo("app\\vistas\\", false);
         }
@@ -104,9 +104,9 @@ namespace MVC
                         ruta = "app\\includes\\config\\";
                         archivo = "variables.php";
                         break;
-                    case "url":
-                        ruta = "public\\";
-                        archivo = "index.php";
+                    case "route":
+                        ruta = "app\\includes\\";
+                        archivo = "routes.php";
                         break;
                     case "include":
                         ruta = "app\\includes\\";
@@ -115,6 +115,14 @@ namespace MVC
                     case "middleware":
                         ruta = "app\\clases\\";
                         archivo = "Middleware.php";
+                        break;
+                    case "migrations":
+                        ruta = "app\\clases\\";
+                        archivo = "Migrations.php";
+                        break;
+                    case "routes":
+                        ruta = "app\\includes\\";
+                        archivo = "routes.php";
                         break;
                     default:
                         Mensajes.ponError("Debe especificar que tipo válido de archivo desea abrir. Para ayuda teclear lima help open");
@@ -165,7 +173,7 @@ namespace MVC
                 Directory.CreateDirectory(ruta);
 
             System.IO.File.Copy("lima.exe", ruta + "\\lima.exe", true);
-            Create.descarga("https://davidmartinezleal.netlify.app/MVC/limaadmin.exe", ruta + "\\limaadmin.exe");
+            Create.descarga("https://limaframework.netlify.app/MVC/limaadmin.exe", ruta + "\\limaadmin.exe");
 
             string variableDeUsuario = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User);
             if (!variableDeUsuario.Contains("Lima"))

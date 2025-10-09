@@ -39,6 +39,12 @@ namespace MVC
                     else
                         metodos("middleware");
                     break;
+                case "migrations":
+                    if (args.Length > 2)
+                        Lists.listMigrations(true, args[2]);
+                    else
+                        Lists.listMigrations(true);
+                    break;
                 case "view":
                     if (args.Length > 2)
                         vista(args[2]);
@@ -105,7 +111,7 @@ namespace MVC
                     }
                 }
 
-                Ficheros.leeFichero("public\\index.php");
+                Ficheros.leeFichero("app\\includes\\routes.php");
                 lista = Ficheros.contiene("[" + nombreEncontrado + "::Class, \'" + metodoEncontrado);
                 if (lista.Count > 0)
                 {
@@ -172,7 +178,7 @@ namespace MVC
                 List<String> urls = new List<String>();
 
                 if (nombre == "controlador")
-                    urls = Ficheros.leeFichero("public\\index.php");
+                    urls = Ficheros.leeFichero("app\\includes\\routes.php");
 
                 int vistas = 0;
                 bool inicio = true;
@@ -234,10 +240,8 @@ namespace MVC
                                 foreach (String linea in urls)
                                 {
                                     if (linea.Contains(clase) && linea.Contains(metodo))
-                                        if (linea.Contains("get"))
-                                            Lists.muestraURL("GET", linea);
-                                        else
-                                            Lists.muestraURL("POST", linea);
+                                        if (linea.Contains("->route"))
+                                            Lists.muestraURL(linea);
                                 }
 
                             }

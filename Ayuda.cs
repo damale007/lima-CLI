@@ -66,14 +66,14 @@ namespace MVC
                 Mensajes.lineaAyuda("install\t\t", "Instala el framework.\n");
 
                 Mensajes.lineaAyuda("config\t\t", "Se usa para hacer distintas configuraciones, para más ayuda teclear lima help config\n");
-                Mensajes.lineaAyuda("create\t\t", "Se usa para crear modelos, controladores, url..., para más ayuda teclear lima help create\n");
-                Mensajes.lineaAyuda("list\t\t", "Se usa para listar modelos, controladores, url..., para más ayuda teclear lima help list\n");
-                Mensajes.lineaAyuda("details\t\t", "Se usa para ver detalles de modelos, controladores, url..., para más ayuda teclear lima help details\n");
+                Mensajes.lineaAyuda("create\t\t", "Se usa para crear modelos, controladores, rutas..., para más ayuda teclear lima help create\n");
+                Mensajes.lineaAyuda("list\t\t", "Se usa para listar modelos, controladores, rutas..., para más ayuda teclear lima help list\n");
+                Mensajes.lineaAyuda("details\t\t", "Se usa para ver detalles de modelos, controladores, rutas..., para más ayuda teclear lima help details\n");
                 Mensajes.lineaAyuda("add\t\t", "Se usa para añadir a elementos ya creados, para más ayuda teclear lima help add\n");
                 Mensajes.lineaAyuda("modify\t\t", "Se usa para modificar elementos ya creados, para más ayuda teclear lima help modify\n");
                 Mensajes.lineaAyuda("remove\t\t", "Se usa para eliminar elementos ya creados, para más ayuda teclear lima help remove\n");
                 Mensajes.lineaAyuda("open\t\t", "Se usa para abrir en el editor que tenga asignado el archivo seleccionado, para más ayuda teclear lima help open\n");
-                Mensajes.lineaAyuda("seo [error]\t\t\t", "Muestra algunos errores básicos en el SEO de las vistas. Si se pone error, ignorará los warnings");
+                Mensajes.lineaAyuda("seo [error]\t", "Muestra algunos errores básicos en el SEO de las vistas. Si se pone error, ignorará los warnings");
                 Console.WriteLine("También puede ofrecer ayuda de las clases teclenado lima help activerecord o lima help router, lima help cookie, lima help session o lima help css");
             }
         }
@@ -85,29 +85,30 @@ namespace MVC
             Mensajes.lineaAyuda("controller nombre_controlador\t", "Abre el controlador espeficado.\n");
             Mensajes.lineaAyuda("model nombre_modelo\t\t", "Abre el modelo especificado.\n");
             Mensajes.lineaAyuda("middleware\t\t", "Abre el archivo de la clase Middleware.\n");
+            Mensajes.lineaAyuda("migrations\t\t", "Abre el archivo de la clase Migrations.\n");
             Mensajes.lineaAyuda("include\t\t\t\t", "Abre el archivo con los includes para cargar siempre un controlador.\n");
-            Mensajes.lineaAyuda("url\t\t\t\t", "Abre el archivo con las definiciones de URL.\n");
+            Mensajes.lineaAyuda("route\t\t\t\t", "Abre el archivo con las definiciones de rutas.\n");
             Mensajes.lineaAyuda("define\t\t\t\t", "Abre el archivo con las definicioens de constantes.\n");
         }
 
         private static void ayudaModifica()
         {
             Console.WriteLine("Modify puede modificar elementos ya creados. Los valores válidos son:");
-            Mensajes.lineaAyuda("url [URL] [nomiddleware]\t", "Modifica una definición de URL ya creada. \n\t\t\t\tSi se añado nomiddleware, elimina el middleware que tenga definido.\n");
+            Mensajes.lineaAyuda("route [URL] [nomiddleware]\t", "Modifica una definición de una ruta ya creada. \n\t\t\t\tSi se añado nomiddleware, elimina el middleware que tenga definido.\n");
             Mensajes.lineaAyuda("middleware [nombre]\t", "Modifica un Middleware ya creado.\n");
         }
 
         private static void ayudaRemove()
         {
             Console.WriteLine("Remove puede eliminar a elementos ya creados. Los valores válidos son:");
-            Mensajes.lineaAyuda("url [URL]\t\t\t\t\t", "Elimina una URL ya definida.\n");
+            Mensajes.lineaAyuda("route [URL]\t\t\t\t\t", "Elimina una ruta ya definida.\n");
             Mensajes.lineaAyuda("middleware [nombre] [controlador] [método]\t", "Elimina un middleware ya definido.\n");
         }
 
         private static void ayudaAdd()
         {
             Console.WriteLine("Add puede añadir a elementos ya creados. Los valores válidos son:");
-            Mensajes.lineaAyuda("middleware [URL]\t", "Añade una llamada a middleware en una URL que está previamente definida.\n");
+            Mensajes.lineaAyuda("middleware [URL]\t", "Añade una llamada a middleware en una ruta que está previamente definida.\n");
             Mensajes.lineaAyuda("bootstrap\t\t", "Añade la librería de CSS Bootstrap.\n");
         }
 
@@ -125,12 +126,12 @@ namespace MVC
         private static void ayudaCreate()
         {
             Console.WriteLine("Create puede crear tanto modelos, controladores..., que hay que especificar en otro parámetro. Los valores válidos son:");
-            Mensajes.lineaAyuda("project nombre\t\t", "Crea un nuevo proyecto, creando toda la estructura necesaria y hosts virtuales.\n");
+            Mensajes.lineaAyuda("project nombre [novrhost]\t", "Crea un nuevo proyecto, creando toda la estructura necesaria y host virtual (opcional).\n");
             Mensajes.lineaAyuda("vrhost\t\t\t", "Crea host virtual para acceder a la web en local.\n");
             Mensajes.lineaAyuda("model [nombre]\t\t", "Crea un modelo.\n");
             Mensajes.lineaAyuda("controller [nombre]\t", "Crea un controlador.\n");
-            Mensajes.lineaAyuda("migration [tabla]\t\t", "Crea una migración de una tabla en la base de datos.\n");
-            Mensajes.lineaAyuda("url [/direccion]\t", "Crea una URL válida y se la asigna a un método de un controlador.\n");
+            Mensajes.lineaAyuda("migration [tabla]\t", "Crea una migración de una tabla en la base de datos.\n");
+            Mensajes.lineaAyuda("route [/direccion] [view]\t", "Crea una ruta válida y se la asigna a un método de un controlador o vista si incluye view.\n");
             Mensajes.lineaAyuda("middleware [nombre]\t", "Crea una Middleware de forma general.\n");
             Mensajes.lineaAyuda("form\t\t\t", "Crea un formulario en una vista.\n");
         }
@@ -140,7 +141,7 @@ namespace MVC
             Mensajes.lineaAyuda("models [busca]\t\t", "Listado de todos los modelos creados o los que contengan busca.\n");
             Mensajes.lineaAyuda("controllers [busca]\t", "Listado de todos los controladores creados.\n");
             Mensajes.lineaAyuda("views [busca]\t", "Listado de todas las vistas creadas.\n");
-            Mensajes.lineaAyuda("url [get|post] [busca]\t", "Muestra las URL creadas. Puede filtrarlas por get/post y o buscar texto.\n");
+            Mensajes.lineaAyuda("route [middleware] [busca]\t", "Muestra las rutas creadas. Puede filtrarlas por buscar o por middleware.\n");
             Mensajes.lineaAyuda("middleware\t\t", "Muestra las Middleware creadas. \n");
             Mensajes.lineaAyuda("migrations\t\t", "Muestra un listado de las migraciones creadas. \n");
             Mensajes.lineaAyuda("functions\t\t", "Muestra un listado de las funciones globales disponibles. \n");
@@ -150,8 +151,9 @@ namespace MVC
             Console.WriteLine("details muestra los detalles sobre un modelo o un controlador. Los parámetros permitidos son:");
             Mensajes.lineaAyuda("model [nombre]\t\t", "Muestra detalles sobre la tabla de la base de datos del modelo.\n");
             Mensajes.lineaAyuda("controller [nombre]\t", "Muestra un listado de los métodos definidos en ese controlador.\n");
-            Mensajes.lineaAyuda("view [nombre]\t\t", "Muestra el controlador y método que llaman a la vista, asi como su URL.\n");
+            Mensajes.lineaAyuda("view [nombre]\t\t", "Muestra el controlador y método que llaman a la vista, asi como su ruta.\n");
             Mensajes.lineaAyuda("middleware\t\t", "Muestra un listado de los métodos definidos en la clase Middleware.\n");
+            Mensajes.lineaAyuda("migrations\t\t", "Muestra un listado e información de las migraciones creadas.\n");
         }
 
         private static void activerecord()
@@ -175,8 +177,8 @@ namespace MVC
         private static void ayudaRouter()
         {
             Mensajes.lineaAyuda("Router->render(vista, params)\t", "Visualiza la vista especificada pasándole el array variables params.\n");
-            Mensajes.lineaAyuda("Router->countParams()\t\t", "Retorna el número de parámetros pasados por URL por medio de barras.\n");
-            Mensajes.lineaAyuda("Router->getParam(num)\t\t", "Retorna el parámetro pasado por URL por medio de barras número num, siendo 1 el primero.\n");
+            Mensajes.lineaAyuda("Router->countParams()\t\t", "Retorna el número de parámetros pasados por URI por medio de barras.\n");
+            Mensajes.lineaAyuda("Router->getParam(num)\t\t", "Retorna el parámetro pasado por URI por medio de barras número num, siendo 1 el primero.\n");
             Mensajes.lineaAyuda("Router->getMethod()\t\t\t", "Retorna el método que se está ejecutando.\n");
             Mensajes.lineaAyuda("Router->getController()\t\t", "Retorna el controlador que se está ejecutando.\n");
         }

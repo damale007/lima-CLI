@@ -36,7 +36,7 @@ namespace MVC
                     else
                         listaArchivos("controladores");
                     break;
-                case "url":
+                case "routes":
                     listaURL(URL, args);
                     break;
                 case "middleware":
@@ -60,13 +60,14 @@ namespace MVC
             }
         }
 
-        public static void listMigrations()
+        public static void listMigrations(bool details = false, String tabla = "")
         {
             List<String> tablas = new List<String>();
             List<String> variables = new List<String>();
             char caracter = '\"';
             String[] partes;
             int numTablas = 0;
+            String tablaActual = "";
 
             List<String> codigo = Ficheros.leeFichero("app\\clases\\Migrations.php");
             List<String> definiciones = Ficheros.contiene("$this::createTable(");
@@ -93,7 +94,7 @@ namespace MVC
             {
                 caracter = '"';
 
-                if (begin)
+                if (begin && details && (tablaActual == tabla || tabla == ""))
                 {
                     if (code.Contains("'"))
                         caracter = '\'';
@@ -108,11 +109,11 @@ namespace MVC
                     if (partes.Count() > 5)
                     {
                         Console.Write(" - Restricciones: ");
-                        for (int i=5; i< partes.Count(); i+=2)
+                        for (int i = 5; i < partes.Count(); i += 2)
                             Console.Write(partes[i] + " ");
-
-                        Console.WriteLine();
                     }
+                    Console.WriteLine();
+
                 }
 
                 for (int i =0; i < variables.Count; i++) 
@@ -121,16 +122,18 @@ namespace MVC
 
                     if (codeNoSpace.Contains(variables[i] + "=["))
                     {
-                        Mensajes.lineaAyuda("Tabla: " + tablas[i], ":\n");
-                        begin = true;
-                        numTablas++;
+                        if (!details || (details && (tabla == tablas[i] || tabla == ""))) { 
+                            Mensajes.lineaAyuda("Tabla: " + tablas[i], "\n");
+                            tablaActual = tablas[i];
+                            begin = true;
+                            numTablas++;
+                        }
                     }
                 }
 
                 if (code.Contains("];"))
                 {
                     begin = false;
-                    Console.WriteLine();
                 }
             }
             Console.WriteLine("Listadas " + numTablas + " migraciones.");
@@ -222,7 +225,7 @@ namespace MVC
             String busca = "";
 
             if (args.Length > 2)
-                if (args[2] == "get" || args[2] == "post" || args[2] == "middleware")
+                if (args[2] == "middleware")
                 {
                     method = args[2];
                     if (args.Length > 3)
@@ -237,72 +240,43 @@ namespace MVC
                 return;
             }
 
-            int numeroGet = 0;
-            int numeroPost = 0;
+            int numero = 0;
 
-            List<String> contenido = Ficheros.leeFichero("public\\index.php");
+            List<String> contenido = Ficheros.leeFichero("app\\includes\\routes.php");
 
             foreach(String linea in contenido)
             {
                 if (tipo == URL)
                 {
-                    if (linea.Contains("$router->get"))
+                    if (linea.Contains("$router->route"))
                     {
-                        if (method == "" || method == "get")
+                        if (method != "middleware")
                         {
                             if (busca == "")
                             {
-                                muestraURL("GET", linea);
-                                numeroGet++;
+                                muestraURL(linea);
+                                numero++;
                             }
                             else
                             {
                                 if (linea.Contains(busca))
                                 {
-                                    muestraURL("GET", linea);
-                                    numeroGet++;
+                                    muestraURL(linea);
+                                    numero++;
                                 }
                             }
                         }
-                    }
-
-                    if (linea.Contains("$router->post"))
-                    {
-                        if (method == "" || method == "post")
-                        {
-                            if (busca == "")
-                            {
-                                muestraURL("POST", linea);
-                                numeroPost++;
-                            }
-                            else
-                            {
-                                if (linea.Contains(busca))
-                                {
-                                    muestraURL("POST", linea);
-                                    numeroPost++;
-                                }
-                            }
-                        }
-                    }
-
-                    if (linea.Contains("$router->post") || linea.Contains("$router->get"))
-                    {
+                     
                         String[] division = linea.Split('\'');
 
                         if (method == "middleware" && division.Length > 5)
                         {
-                            if (linea.Contains("->get"))
+                            if (linea.Contains("->route"))
                             {
-                                muestraURL("GET", linea);
-                                numeroGet++;
+                                muestraURL(linea);
+                                numero++;
                             }
 
-                            if (linea.Contains("->post"))
-                            {
-                                muestraURL("POST", linea);
-                                numeroPost++;
-                            }
                         }
                     }
                 }
@@ -311,15 +285,15 @@ namespace MVC
                     if (linea.Contains("$router->middleware"))
                     {
                         muestraMiddl(linea);
-                        numeroPost++;
+                        numero++;
                     }
                 }
             }
 
             if (tipo == URL)
-                Console.WriteLine(numeroGet + " URLs tipo get y " + numeroPost + " URLs tipo post.");
+                Mensajes.lineaAyuda(numero + " rutas .", "\n");
             else
-                Console.WriteLine(numeroPost + " Middlewares.");
+                Mensajes.lineaAyuda(numero + " Middlewares.", "\n");
         }
 
         private static void muestraMiddl(String linea)
@@ -331,16 +305,15 @@ namespace MVC
             Console.WriteLine(valores[1] + " - " + valores[3]);
         }
 
-        public static void muestraURL(String tipo, String linea)
+        public static void muestraURL(String linea)
         {
             String[] valores = linea.Split('\'');
 
-            if (tipo != "MIDDLEWARE" || (tipo == "MIDDLEWARE" && valores.Length > 5))
-            {
+           /* if (tipo != "MIDDLEWARE" || (tipo == "MIDDLEWARE" && valores.Length > 5))
+            {*/
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.Write(valores[1] + " - ");
                 Console.ForegroundColor = ConsoleColor.DarkYellow;
-                Console.Write(tipo);
                 Console.ResetColor();
                 Console.Write("\t--> " + valores[2].Substring(3, valores[2].Length - 12) + " - " + valores[3]);
 
@@ -348,7 +321,7 @@ namespace MVC
                     Mensajes.lineaAyuda(" - Middleware: ", valores[5] + "\n", true);
                 else
                     Console.WriteLine();
-            }
+            //}
         }
 
         public static void listaArchivos(String carpeta, String busca = "")

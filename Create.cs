@@ -36,9 +36,15 @@ namespace MVC
                     else
                         controller();
                     break;
-                case "url":
+                case "route":
                     if (args.Length > 2)
-                        indexURL(CREAR, args[2]);
+                        if (args.Length > 3)
+                            if (args[3] == "view")
+                                indexURL(CREAR, args[2], true);
+                            else
+                                indexURL(CREAR, args[2]);
+                        else
+                             indexURL(CREAR, args[2]);
                     else
                         indexURL(CREAR);
                     break;
@@ -73,7 +79,7 @@ namespace MVC
                     {
                         nombre = args[2];
                         if (args.Length > 3)
-                            if (args[3] == "-vrhost")
+                            if (args[3] == "novrhost")
                                 vrh = false;
                     }
 
@@ -115,14 +121,13 @@ namespace MVC
 
                 Console.WriteLine("Creadas las carpetas necesarias");
 
-                string contenido = "<?php\r\nrequire_once '../app/includes/app.php';\r\n\r\nuse MVC\\Router;\r\nuse Controlador\\HomeController;\r\n\r\n$router = new Router();\r\n\r\n\t$router->get('/', [HomeController::Class, 'home']);\r\n\r\n$router->comprobarRutas();\r\n?>";
-                Ficheros.escribeFichero(nombre + "\\public\\index.php", contenido);
-
-                contenido = "RewriteEngine On\r\nRewriteCond %{REQUEST_FILENAME} !-f\r\nRewriteRule ^ index.php [QSA,L]";
+                String contenido = "RewriteEngine On\r\nRewriteCond %{REQUEST_FILENAME} !-f\r\nRewriteRule ^ index.php [QSA,L]";
                 Ficheros.escribeFichero(nombre + "\\public\\.htaccess", contenido);
 
                 Ficheros.escribeFichero(nombre + "\\app\\includes\\funciones.php", "<?php\r\n//Crea aquí las funciones globales que desee usar en cualquier parte.");
 
+                descarga("https://limaframework.netlify.app/MVC/index.php", nombre + @"\public\index.php");
+                descarga("https://limaframework.netlify.app/MVC/routes.php", nombre + @"\app\includes\routes.php");
                 descarga("https://limaframework.netlify.app/MVC/Session.php", nombre + @"\app\clases\Session.php");
                 descarga("https://limaframework.netlify.app/MVC/Cookie.php", nombre + @"\app\clases\Cookie.php");
                 descarga("https://limaframework.netlify.app/MVC/Error.php", nombre + @"\app\clases\Error.php");
@@ -137,7 +142,6 @@ namespace MVC
                 descarga("https://limaframework.netlify.app/MVC/autoload.php", nombre + @"\app\includes\autoload.php");
                 descarga("https://limaframework.netlify.app/MVC/DataBase.php", nombre + @"\app\clases\DataBase.php");
                 descarga("https://limaframework.netlify.app/MVC/layout.php", nombre + @"\app\vistas\layout.php");
-                descarga("https://limaframework.netlify.app/MVC/index.php", nombre + @"\app\vistas\index.php");
                 descarga("https://limaframework.netlify.app/MVC/cabecera.php", nombre+ @"\app\vistas\cabecera.php");
                 descarga("https://limaframework.netlify.app/MVC/footer.php", nombre + @"\app\vistas\footer.php");
                 descarga("https://limaframework.netlify.app/MVC/ActiveRecord.php", nombre + @"\app\modelos\ActiveRecord.php");
@@ -212,7 +216,7 @@ namespace MVC
             if (rutaApache.Substring(rutaApache.Length - 1, 1) != "\\")
                 rutaApache += "\\";
 
-            rutaApache += "conf\\extra\\httpd-vhosts.conf";
+            String conf = "conf\\extra\\httpd-vhosts.conf";
             contenido = "<VirtualHost " + nombre + ".test:80>\n";
             contenido += "\tDocumentRoot \"" + ruta + "\\" + nombre + "\\public\"\n";
             contenido += "\tServerName " + nombre + ".test\n";
@@ -223,7 +227,7 @@ namespace MVC
             contenido += "\t\tRequire all granted\n";
             contenido += "\t</Directory>\n";
             contenido += "</VirtualHost>";
-            if (!Ficheros.anadeFichero(rutaApache, contenido))
+            if (!Ficheros.anadeFichero(rutaApache + conf, contenido))
                 Mensajes.ponError("Error al crear el host virtual. Para hacerlo manualmente teclear lima create vrhost nombre_host");
 
             Console.Write("Para que el host virtual tenga efecto deberá reiniciar Apache.\nPuede acceder a la web escribiendo en el navegador: ");
@@ -312,7 +316,7 @@ namespace MVC
             {
                 Console.Write("\nNo existe url a ese método, introduce una: ");
                 url = Console.ReadLine();
-                indexURL(CREAR, url, "a", controlador, metodo);
+                indexURL(CREAR, url, false, "a", controlador, metodo);
             }
 
             //Abre los ficheros
@@ -450,7 +454,7 @@ namespace MVC
 
             return code;
         }
-        private static void createMigration(String tabla = "")
+        public static void createMigration(String tabla = "")
         {
             String cadena;
             String atrib;
@@ -464,6 +468,61 @@ namespace MVC
             }
 
             cadena = "\t\t$" + tabla + " = [\n";
+
+            //BUsca si hay algún modelo con esa tabla
+            string[] files;
+            string modelo = "";
+
+            if (!System.IO.Directory.Exists("app\\modelos"))
+            {
+                Mensajes.ponError("ERROR: No existe la carpeta app\\modelos");
+                return;
+            }
+
+            try
+            {
+                // Obtener todos los archivos del directorio
+                files = Directory.GetFiles("app\\modelos\\");
+
+                foreach (string f in files)
+                {
+                    String nombre = Path.GetFileName(f);
+                    String nombreArchivo = nombre.Substring(0, nombre.Length - 4);
+
+                    if (nombreArchivo.ToLower() != "activerecord")
+                    {
+                        Ficheros.leeFichero("app\\modelos\\" + nombreArchivo + ".php");
+                        if (Ficheros.existeLinea("protectedstatic$tabla=\"" + tabla + "\";", true) > 0)
+                        {
+                            modelo = nombreArchivo + ".php";
+                            break;
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+
+
+            if (modelo != "")
+            {
+                String resp = "";
+                do
+                {
+                    Console.Write("Ya existe un modelo con esa tabla ¿desea improtar la estructura a la migración ");
+                    Mensajes.lineaAyuda("(s/n)", "? ", true);
+                    resp = Console.ReadLine().ToLower();
+                } while (resp != "s" && resp != "n");
+
+                if (resp == "s")
+                {
+                    importaMigracion(modelo, tabla);
+                    return;
+                }
+            }
 
             do
             {
@@ -484,103 +543,164 @@ namespace MVC
                         primero = false;
 
                     cadena += "\t\t\t'" + atrib + "' => [";
-                    do
-                    {
-                        Mensajes.lineaAyuda("(s)", " Cadena de caracteres.\n", true);
-                        Mensajes.lineaAyuda("(t)", " Texto grande.\n", true);
-                        Mensajes.lineaAyuda("(i)", " Número entero 32 bits.\n", true);
-                        Mensajes.lineaAyuda("(is)", " Número entero de 16 bits\n", true);
-                        Mensajes.lineaAyuda("(ib)", " Número entero de 64 bits\n", true);
-                        Mensajes.lineaAyuda("(d)", " Número decimal.\n", true);
-                        Mensajes.lineaAyuda("(db)", " Número decimal grande.\n", true);
-                        Mensajes.lineaAyuda("(f)", " Fecha\n", true);
-                        Mensajes.lineaAyuda("(fh)", " Fecha y Hora.\n", true);
-                        Console.Write("Elige un tipo: ");
-                        tipo = Console.ReadLine().ToLower();
-                    } while (tipo != "s" && tipo != "t" && tipo != "i" && tipo != "is" && tipo != "ib" && tipo != "d" && tipo != "db" && tipo != "f" && tipo != "fh");
-
-                    switch (tipo)
-                    {
-                        case "s":
-                            cadena += "'string";
-                            break;
-                        case "t":
-                            cadena += "'text";
-                            break;
-                        case "i":
-                            cadena += "'integer";
-                            break;
-                        case "is":
-                            cadena += "'integer:small";
-                            break;
-                        case "ib":
-                            cadena += "'integer:big";
-                            break;
-                        case "d":
-                            cadena += "'float";
-                            break;
-                        case "db":
-                            cadena += "'float:big";
-                            break;
-                        case "f":
-                            cadena += "'date";
-                            break;
-                        case "fh":
-                            cadena += "'datetime";
-                            break;
-                    }
-
-                    if (tipo == "s")
-                    {
-                        Console.Write("tamaño en caracteres ");
-                        Mensajes.lineaAyuda("(intro ninguno)", ": ");
-                        String tam = Console.ReadLine();
-                        if (tam != "")
-                            cadena += ":" + tam;
-                    }
-                    cadena += "'";
-
-                    do
-                    {
-                        Console.Write("Restricciones ");
-                        Mensajes.lineaAyuda("(intro - ninguna)", " - ", true);
-                        Mensajes.lineaAyuda("(fk) ", "Clave foránea - ", true);
-                        Mensajes.lineaAyuda("(u)", " Único - ", true);
-                        Mensajes.lineaAyuda("(nn)", " No nulo: ", true);
-                        tipo = Console.ReadLine().ToLower();
-                    } while (tipo != "fk" && tipo != "u" && tipo != "nn" && tipo != "");
-
-                    if (tipo != "")
-                    {
-                        switch (tipo)
-                        {
-                            case "fk":
-                                cadena += ", 'fk:";
-                                Console.Write("Tabla a enlazar: ");
-                                String tb = Console.ReadLine();
-                                cadena += tb;
-                                break;
-                            case "u":
-                                cadena += ", 'unique";
-                                break;
-                            case "nn":
-                                cadena += ", 'notnull";
-                                break;
-                        }
-                        cadena += "']";
-                    }
-                    else
-                        cadena += "]";
+                    cadena += preguntaTipo(atrib);
                 }
             } while (atrib != "");
             cadena += "\n\t\t];\n";
             cadena += "\t\t$this::createTable('" + tabla + "', $" + tabla + ");\n";
 
             List<String> contenido = Ficheros.leeFichero("app\\clases\\Migrations.php");
-            Ficheros.inserta(cadena, "public function create(){");
+            Ficheros.inserta("\n" + cadena, "}", true);
             Ficheros.escribeFichero("app\\clases\\Migrations.php");
 
             Mensajes.lineaAyuda("Migración creada.", "\n");
+        }
+
+        public static void importaMigracion(String archivo, String tabla)
+        {
+            String cadena = "\t\t$" + tabla + " = [\n";
+
+            Ficheros.leeFichero("app\\modelos\\" + archivo);
+            List<String> lineas = Ficheros.contiene("$columnasDB");
+
+            if (lineas == null || lineas.Count == 0)
+            {
+                Mensajes.ponError("Error en el modelo, no se puede importar.");
+                return;
+            }
+            else
+            {
+                String linea = lineas[0];
+                char caracter = '\'';
+                String atrib = "";
+                bool primero = true;
+
+                if (linea.Contains("\""))
+                    caracter = '\"';
+
+                String[] campos = linea.Split(caracter);
+                for (int i = 1; i<campos.Count() -1; i += 2)
+                {
+                    atrib = campos[i];
+                    if (atrib != "id")
+                    {
+                        if (primero)
+                            primero = false;
+                        else
+                            cadena += ",\n";
+
+
+                        cadena += "\t\t\t'" + atrib + "' => [";
+                        Console.Write("Atributo: ");
+                        Mensajes.lineaAyuda(atrib, ":\n");
+                        cadena += preguntaTipo(atrib);
+                    }
+                }
+                cadena += "\n\t\t];\n";
+                cadena += "\t\t$this::createTable('" + tabla + "', $" + tabla + ");\n";
+
+                List<String> contenido = Ficheros.leeFichero("app\\clases\\Migrations.php");
+                Ficheros.inserta("\n" + cadena, "}", true);
+                Ficheros.escribeFichero("app\\clases\\Migrations.php");
+
+                Mensajes.lineaAyuda("Migración importada de modelo corrrectamente.", "\n");
+            }
+        }
+
+        private static String preguntaTipo(String atrib)
+        {
+            String tipo = "";
+            String cadena = "";
+
+            do
+            {
+                Mensajes.lineaAyuda("(s)", " Cadena de caracteres.\n", true);
+                Mensajes.lineaAyuda("(t)", " Texto grande.\n", true);
+                Mensajes.lineaAyuda("(i)", " Número entero 32 bits.\n", true);
+                Mensajes.lineaAyuda("(is)", " Número entero de 16 bits\n", true);
+                Mensajes.lineaAyuda("(ib)", " Número entero de 64 bits\n", true);
+                Mensajes.lineaAyuda("(d)", " Número decimal.\n", true);
+                Mensajes.lineaAyuda("(db)", " Número decimal grande.\n", true);
+                Mensajes.lineaAyuda("(f)", " Fecha\n", true);
+                Mensajes.lineaAyuda("(fh)", " Fecha y Hora.\n", true);
+                Console.Write("Elige un tipo: ");
+                tipo = Console.ReadLine().ToLower();
+            } while (tipo != "s" && tipo != "t" && tipo != "i" && tipo != "is" && tipo != "ib" && tipo != "d" && tipo != "db" && tipo != "f" && tipo != "fh");
+
+            switch (tipo)
+            {
+                case "s":
+                    cadena += "'string";
+                    break;
+                case "t":
+                    cadena += "'text";
+                    break;
+                case "i":
+                    cadena += "'integer";
+                    break;
+                case "is":
+                    cadena += "'integer:small";
+                    break;
+                case "ib":
+                    cadena += "'integer:big";
+                    break;
+                case "d":
+                    cadena += "'float";
+                    break;
+                case "db":
+                    cadena += "'float:big";
+                    break;
+                case "f":
+                    cadena += "'date";
+                    break;
+                case "fh":
+                    cadena += "'datetime";
+                    break;
+            }
+
+            if (tipo == "s")
+            {
+                Console.Write("tamaño en caracteres ");
+                Mensajes.lineaAyuda("(intro ninguno)", ": ");
+                String tam = Console.ReadLine();
+                if (tam != "")
+                    cadena += ":" + tam;
+            }
+            cadena += "'";
+
+            do
+            {
+                Console.Write("Restricciones ");
+                Mensajes.lineaAyuda("(intro - ninguna)", " - ", true);
+                Mensajes.lineaAyuda("(fk) ", "Clave foránea - ", true);
+                Mensajes.lineaAyuda("(u)", " Único - ", true);
+                Mensajes.lineaAyuda("(nn)", " No nulo: ", true);
+                tipo = Console.ReadLine().ToLower();
+            } while (tipo != "fk" && tipo != "u" && tipo != "nn" && tipo != "");
+
+            if (tipo != "")
+            {
+                switch (tipo)
+                {
+                    case "fk":
+                        cadena += ", 'fk:";
+                        Console.Write("Tabla a enlazar: ");
+                        String tb = Console.ReadLine();
+                        cadena += tb;
+                        break;
+                    case "u":
+                        cadena += ", 'unique";
+                        break;
+                    case "nn":
+                        cadena += ", 'notnull";
+                        break;
+                }
+                cadena += "']";
+            }
+            else
+                cadena += "]";
+
+            return cadena;
         }
 
         public static void listaMiddle(int tipo, String nombre = "")
@@ -617,9 +737,13 @@ namespace MVC
             Ficheros.escribeURL(tipo, cadena, controlador, "");
         }
 
-        public static void indexURL(int modif, string direccion = "", string method = "", string controllerP = "", string methodController = "")
+        public static void indexURL(int modif, string direccion = "", bool vista = false, string method = "", string controllerP = "", string methodController = "")
         {
-            if (!Ficheros.existe("public\\index.php"))
+            string[] files;
+            string folderPath = "app\\controladores"; // Cambia esto por el path de tu carpeta
+            String middle = "";
+
+            if (!Ficheros.existe("app\\includes\\routes.php"))
             {
                 Mensajes.ponError("No existe el fichero de asignaciones de ruta. ¿está correctamente instalado el framework?");
             }
@@ -636,7 +760,7 @@ namespace MVC
                 }
                 if (direccion[0].ToString() != "/") direccion = "/" + direccion;
 
-                if (modif == CREAR && Ficheros.existeEnFichero("public\\index.php", direccion))
+                if (modif == CREAR && Ficheros.existeEnFichero("app\\includes\\routes.php", direccion))
                 {
                     Mensajes.ponError("ERROR: esa URL ya existe.");
                     return;
@@ -644,68 +768,54 @@ namespace MVC
 
                 Boolean existe = false;
 
-                if (method == "")
+                if (vista)
                 {
-                    do
-                    {
-                        Console.Write("\n¿El enlace es get, post o ambos ");
-                        Mensajes.lineaAyuda("(g/p/a)", ": ", true);
-                        method = Console.ReadLine().ToLower();
-                    } while (method != "g" && method != "p" && method != "a");
+                    Console.Write("Introduce la vista a llamar: ");
+                    methodController = Console.ReadLine();
                 }
-
-                string[] files;
-                string folderPath = "app\\controladores"; // Cambia esto por el path de tu carpeta
-
-                if (controllerP == "")
+                else
                 {
-                    Lists.listaArchivos("controladores");
-                    do
+                    if (controllerP == "")
                     {
-                        Console.Write("\nControlador al que accede ");
-                        Mensajes.lineaAyuda("(Intro -> salir)", ": ", true);
-                        controllerP = Console.ReadLine();
-                    } while (controllerP != "" && !System.IO.File.Exists("app\\controladores\\" + controllerP + ".php"));
+                        Lists.listaArchivos("controladores");
+                        do
+                        {
+                            Console.Write("\nControlador al que accede ");
+                            Mensajes.lineaAyuda("(Intro -> salir)", ": ", true);
+                            controllerP = Console.ReadLine();
+                        } while (controllerP != "" && !System.IO.File.Exists("app\\controladores\\" + controllerP + ".php"));
 
-                    if (controllerP == "") return;
-                }
+                        if (controllerP == "") return;
+                    }
 
-                if (methodController == "")
-                {
-                    Console.WriteLine("\nListado de métodos en el controlador:");
-                    Details.metodos("controlador", controllerP);
+                    if (methodController == "")
+                    {
+                        Console.WriteLine("\nListado de métodos en el controlador:");
+                        Details.metodos("controlador", controllerP);
+                        Console.WriteLine();
+                        do
+                        {
+                            Console.Write("Método que ejecuta: ");
+                            methodController = Console.ReadLine();
+                        } while (methodController == "");
+                    }
+
+                    Console.WriteLine("\nListado de middlewares:");
+                    Details.metodos("middleware", controllerP);
                     Console.WriteLine();
-                    do
-                    {
-                        Console.Write("Método que ejecuta: ");
-                        methodController = Console.ReadLine();
-                    } while (methodController == "");
+
+                    Console.Write("Middleware ");
+                    Mensajes.lineaAyuda("(intro -> ninguno)", ":", true);
+                    middle = Console.ReadLine();
                 }
 
-                Console.WriteLine("\nListado de middlewares:");
-                Details.metodos("middleware", controllerP);
-                Console.WriteLine();
-
-                Console.Write("Middleware ");
-                Mensajes.lineaAyuda("(intro -> ninguno)", ":", true);
-                String middle = Console.ReadLine();
-
-                String cadena = "";
+                String cadena = "\t$router->route('" + direccion + "', "; ;
                 String cadena2 = "";
 
-                switch (method)
-                {
-                    case "g":
-                        cadena = "\t$router->get('" + direccion + "', [" + controllerP + "::Class, '" + methodController + "'";
-                        break;
-                    case "p":
-                        cadena = "\t$router->post('" + direccion + "', [" + controllerP + "::Class, '" + methodController + "'";
-                        break;
-                    case "a":
-                        cadena = "\t$router->get('" + direccion + "', [" + controllerP + "::Class, '" + methodController + "'";
-                        cadena2 = "\t$router->post('" + direccion + "', [" + controllerP + "::Class, '" + methodController + "'";
-                        break;
-                }
+                if (!vista)
+                    cadena += "[" + controllerP + "::Class, '" + methodController + "'";
+                else
+                    cadena += "'" + methodController + "'";
 
                 if (middle != "")
                 {
@@ -714,37 +824,29 @@ namespace MVC
                         cadena2 += ", '" + middle + "'";
                 }
 
-                cadena += "]);";
+                if (!vista)
+                    cadena += "]);";
+                else
+                    cadena += ");";
 
                 if (cadena2 != "")
                 {
                     cadena += "\r\n" + cadena2 + "]);";
                 }
 
-
                 Ficheros.escribeURL(modif, cadena, controllerP, direccion);
 
-                //string nombreArchivo;
-                existe = false;
-                try
+                if (!vista)
                 {
-                    files = Directory.GetFiles(folderPath);
-
-                    foreach (string f in files)
+                    string valor;
+                    if (!Ficheros.existe(folderPath + "\\" + controllerP + ".php"))
                     {
-                        if (Path.GetFileName(f).Contains(controllerP)) existe = true;
+                        Console.Write("El controlador no existe desea crearlo ");
+                        Mensajes.lineaAyuda("(s/n)", ": ", true);
+                        valor = Console.ReadLine().ToLower();
+
+                        if (valor == "s") controller(controllerP);
                     }
-                }
-                catch (Exception e) { Console.WriteLine(e); }
-
-                string valor;
-                if (!existe)
-                {
-                    Console.Write("El controlador no existe desea crearlo ");
-                    Mensajes.lineaAyuda("(s/n)", ": ", true);
-                    valor = Console.ReadLine().ToLower();
-
-                    if (valor == "s") controller(controllerP);
                 }
             }
         }

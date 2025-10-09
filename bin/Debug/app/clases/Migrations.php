@@ -15,6 +15,12 @@ class Migrations extends ActiveRecord{
 		];
 		$this::createTable('hola2', $hola2);
 
+		$usuario2 = [
+			'hola' => ['integer']
+		];
+		$this::createTable('usuario2', $usuario2);
+
+
     }
 
     public static function createTable($tabla, $atributos) {

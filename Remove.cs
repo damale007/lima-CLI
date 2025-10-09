@@ -23,7 +23,7 @@ namespace MVC
 
             switch (args[1].ToLower())
             {
-                case "url":
+                case "route":
                     Modify.modificaURL(true, args);
                     break;
                 case "middleware":
